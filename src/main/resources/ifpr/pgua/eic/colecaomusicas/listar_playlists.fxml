@@ -15,7 +15,11 @@
       >
     
     <VBox>
+    <StackPane>
         <ListView fx:id="lstPlaylists" onMouseClicked="#mostrarMusicas"/>
+        <PrograssIndicator fx:id="pIndicator"/> 
+    </StackPane>
+        
         <Button text="Voltar" onAction="#voltar"/>
     </VBox>
     <ListView fx:id="lstMusicas"/>

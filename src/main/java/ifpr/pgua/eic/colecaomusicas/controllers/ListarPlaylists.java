@@ -11,6 +11,7 @@ import ifpr.pgua.eic.colecaomusicas.model.entities.Musica;
 import ifpr.pgua.eic.colecaomusicas.model.entities.Playlist;
 import ifpr.pgua.eic.colecaomusicas.model.repositories.RepositorioMusicas;
 import ifpr.pgua.eic.colecaomusicas.model.repositories.RepositorioPlaylists;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -62,18 +63,25 @@ public class ListarPlaylists implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         
-        Resultado rs = repositorio.listar(false);
+        Thread t = new Thread(CriarTarefa());
+        t.start();
 
-        if(rs.foiErro()){
-            Alert alert = new Alert(AlertType.ERROR,rs.getMsg());
-            alert.showAndWait();
-            return;
-        }
-
-        List<Playlist> lista = (List)rs.comoSucesso().getObj();
-        
-        lstPlaylists.getItems().addAll(lista);
-
+    }
+    private Runnable CriarTarefa(){
+        return new Runnable() {
+            public void run() {
+                Resultado rs = repositorio.listar(true);
+                Platform.runLater(() ->{
+                    if(rs.foiErro()){
+                        Alert alert = new Alert(AlertType.ERROR, rs.getMsg());
+                        alert.showAndWait();
+                        return;
+                    }
+                    List<Playlist> lista = (List) rs.comoSucesso().getObj();
+                    lstPlaylists.getItems().addAll(lista);
+                });
+            }
+        };
     }
 
 }
